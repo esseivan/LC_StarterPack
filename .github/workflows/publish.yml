@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: thunderstore-build
-          path: ./dist/*.zip
+          path: ./*/dist/*.zip
 
   upload-release-artifacts:
     name: Upload Release Artifacts
@@ -51,7 +51,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.event.release.tag_name }} thunderstore-build/*.zip
+          gh release upload ${{ github.event.release.tag_name }} thunderstore-build/dist/*.zip
 
   deploy-thunderstore:
     name: Deploy to Thunderstore
