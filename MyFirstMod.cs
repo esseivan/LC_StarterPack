@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LobbyCompatibility.Attributes;
 using LobbyCompatibility.Enums;
+using MyFirstMod.Patches;
 
 namespace MyFirstMod;
 
@@ -52,7 +53,10 @@ public class MyFirstMod : BaseUnityPlugin
 
         Logger.LogDebug("Patching...");
 
-        Harmony.PatchAll();
+        Harmony.PatchAll(typeof(LightPatch));
+        Harmony.PatchAll(typeof(PatchGrabbable));
+        Harmony.PatchAll(typeof(ExampleScreenPatch));
+        //Harmony.PatchAll(typeof(ExampleTVPatch)); // No longer working in v72
 
         Logger.LogDebug("Finished patching!");
     }
