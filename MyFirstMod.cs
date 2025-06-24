@@ -1,3 +1,5 @@
+using System.IO;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -5,6 +7,7 @@ using HarmonyLib;
 using LobbyCompatibility.Attributes;
 using LobbyCompatibility.Enums;
 using MyFirstMod.Patches;
+using UnityEngine;
 
 namespace MyFirstMod;
 
@@ -20,12 +23,15 @@ public class MyFirstMod : BaseUnityPlugin
     private ConfigEntry<string> configGreeting;
     private ConfigEntry<bool> configDisplayGreeting;
 
+    public static AssetBundle Assets;
+
     private void Awake()
     {
         Logger = base.Logger;
         Instance = this;
 
         Patch();
+        NetcodePatcher();
 
         configGreeting = Config.Bind(
             "General", // The section under which the option is shown
@@ -44,7 +50,34 @@ public class MyFirstMod : BaseUnityPlugin
         if (configDisplayGreeting.Value)
             Logger.LogDebug(configGreeting.Value);
 
+        string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        Assets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "esnassets"));
+
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
+    }
+
+    private static void NetcodePatcher()
+    {
+        Logger.LogDebug("Patching netcode...");
+        var types = Assembly.GetExecutingAssembly().GetTypes();
+        foreach (var type in types)
+        {
+            var methods = type.GetMethods(
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static
+            );
+            foreach (var method in methods)
+            {
+                var attributes = method.GetCustomAttributes(
+                    typeof(RuntimeInitializeOnLoadMethodAttribute),
+                    false
+                );
+                if (attributes.Length > 0)
+                {
+                    method.Invoke(null, null);
+                }
+            }
+        }
+        Logger.LogDebug("Patching netcode... complete");
     }
 
     internal static void Patch()
@@ -53,10 +86,16 @@ public class MyFirstMod : BaseUnityPlugin
 
         Logger.LogDebug("Patching...");
 
-        Harmony.PatchAll(typeof(LightPatch));
-        Harmony.PatchAll(typeof(PatchGrabbable));
-        Harmony.PatchAll(typeof(ExampleScreenPatch));
+        //Harmony.PatchAll(typeof(LightPatch));
+        //Harmony.PatchAll(typeof(PatchGrabbable));
+        //Harmony.PatchAll(typeof(ExampleScreenPatch));
+        //Harmony.PatchAll(typeof(RoundManager));
+        //Harmony.PatchAll(typeof(GameNetworkManager));
+        //Harmony.PatchAll(typeof(StartOfRound));
+
         //Harmony.PatchAll(typeof(ExampleTVPatch)); // No longer working in v72
+
+        Harmony.PatchAll();
 
         Logger.LogDebug("Finished patching!");
     }

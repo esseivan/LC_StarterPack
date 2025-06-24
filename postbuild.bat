@@ -11,6 +11,7 @@ IF not exist "%myDIR%" (
 
 echo Copying DLL to mod directory...
 copy "%projDir%\bin\Debug\netstandard2.1\ESN.MyFirstMod.dll" "%myDIR%"
+copy "%projDir%\bin\Debug\netstandard2.1\esnassets" "%myDIR%"
 
 if %errorlevel% equ 0 (
     echo Copy successful!

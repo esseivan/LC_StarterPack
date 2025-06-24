@@ -18,12 +18,14 @@ public class LightPatch
         MyFirstMod.Logger.LogDebug($"Lights are {isOn}");
         ManualCameraRenderer obj = UnityEngine.Object.FindObjectOfType<ManualCameraRenderer>();
 
+        NetworkTest.SendEventToClients("light");
+
         if (obj is not null && obj.HasMethod("SwitchScreenOn"))
         {
             MyFirstMod.Logger.LogDebug($"TVon is {obj.isScreenOn}");
-            obj.SwitchScreenOn(isOn);
-            obj.syncingSwitchScreen = true;
-            obj.SwitchScreenOnServerRpc(isOn);
+            //obj.SwitchScreenOn(isOn);
+            //obj.syncingSwitchScreen = true;
+            //obj.SwitchScreenOnServerRpc(isOn);
         }
         else
         {
