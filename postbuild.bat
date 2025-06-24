@@ -1,5 +1,7 @@
 @echo off
 
+echo Running post-build script
+
 REM === CONSTANTS ===
 set GAME_DIR=Lethal Company\BepInEx\plugins
 set MOD_NAME=StarterPack

@@ -89,6 +89,9 @@
   <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
     <Exec Command="netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')" />
   </Target>
+  <Target Name="CopyAssets" AfterTargets="PostBuildEvent">
+    <Exec Command="call copyAssets.bat" />
+  </Target>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="call postbuild.bat" />
   </Target>
