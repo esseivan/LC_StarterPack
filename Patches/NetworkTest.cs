@@ -12,6 +12,7 @@ internal class NetworkTest
     [HarmonyPostfix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewFloor))]
     static void SubscribeToHandler()
     {
+        MyFirstMod.Logger.LogError("SubscribeToHandler() called");
         ExampleNetworkHandler.LevelEvent += ReceivedEventFromServer;
     }
 
@@ -21,6 +22,7 @@ internal class NetworkTest
     ]
     static void UnsubscribeFromHandler()
     {
+        MyFirstMod.Logger.LogError("UnsubscribeFromHandler() called");
         ExampleNetworkHandler.LevelEvent -= ReceivedEventFromServer;
     }
 

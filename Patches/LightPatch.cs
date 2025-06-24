@@ -1,5 +1,6 @@
 using EasyTextEffects.Editor.MyBoxCopy.Extensions;
 using HarmonyLib;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -17,6 +18,19 @@ public class LightPatch
         MyFirstMod.Logger.LogDebug("ToggleShipLightsPostfix() called");
         MyFirstMod.Logger.LogDebug($"Lights are {isOn}");
         ManualCameraRenderer obj = UnityEngine.Object.FindObjectOfType<ManualCameraRenderer>();
+
+        Terminal terminal = UnityEngine.Object.FindAnyObjectByType<Terminal>();
+
+        if ((NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
+        {
+            int credits = 500;
+            terminal.useCreditsCooldown = true;
+            terminal.groupCredits = credits;
+            terminal.SyncGroupCreditsServerRpc(
+                terminal.groupCredits,
+                terminal.numberOfItemsInDropship
+            );
+        }
 
         NetworkTest.SendEventToClients("light");
 
