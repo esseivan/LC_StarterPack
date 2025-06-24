@@ -77,6 +77,25 @@ public class StartWithExtras
         }
     }
 
+    /// <summary>
+    /// Unlock Ship Unlockable item from ID. Doesn't change the credits
+    /// </summary>
+    /// <param name="id">Unlockable ID</param>
+    private static void UnlockShipItem(int id)
+    {
+        StartOfRound startOfRound = StartOfRound.Instance;
+
+        if (!startOfRound.unlockablesList.unlockables[id].hasBeenUnlockedByPlayer)
+        {
+            int credits = Object.FindObjectOfType<Terminal>().groupCredits;
+            startOfRound.BuyShipUnlockableServerRpc(id, credits);
+        }
+        else
+        {
+            StarterPack.Logger.LogError($"Ship Unlockable id={id} already unlocked...");
+        }
+    }
+
     private static void ApplyGifts()
     {
         StarterPack.Logger.LogDebug("Applying first day on the job gifts");
@@ -93,15 +112,9 @@ public class StartWithExtras
                     getTeleporterIDs(startOfRound);
                 }
                 StarterPack.Logger.LogDebug("Unlocking teleporter...");
-                if (!startOfRound.unlockablesList.unlockables[teleporterID].hasBeenUnlockedByPlayer)
-                {
-                    startOfRound.BuyShipUnlockableServerRpc(teleporterID, 101);
-                }
-                else
-                {
-                    StarterPack.Logger.LogDebug("Teleporter already available...");
-                }
+                UnlockShipItem(teleporterID);
             }
+            
             if (StarterPack.configFreeInverseTeleporter.Value)
             {
                 if (!idsInitialized)
@@ -109,20 +122,9 @@ public class StartWithExtras
                     getTeleporterIDs(startOfRound);
                 }
                 StarterPack.Logger.LogDebug("Unlocking inverse teleporter...");
-                if (
-                    !startOfRound
-                        .unlockablesList
-                        .unlockables[inverseTeleporterID]
-                        .hasBeenUnlockedByPlayer
-                )
-                {
-                    startOfRound.BuyShipUnlockableServerRpc(inverseTeleporterID, 101);
-                }
-                else
-                {
-                    StarterPack.Logger.LogDebug("Inverse teleporter already available...");
-                }
+                UnlockShipItem(inverseTeleporterID);
             }
+
             if (StarterPack.configStartWithExtraCredits.Value)
             {
                 StarterPack.Logger.LogDebug(
