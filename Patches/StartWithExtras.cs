@@ -6,8 +6,8 @@
  *
  * Description:
  * Patch to auto-unlock teleporter items when starting a new game.
- * 
- * Source : 
+ *
+ * Source :
  * This work uses code from this repository, under the MIT license.
  * https://github.com/Lomeli12/StartingTeleporter
  */
@@ -24,7 +24,7 @@ namespace MyFirstMod.Patches;
 /// <summary>
 /// Patch to automatically unlock teleporter items on new game start
 /// </summary>
-[HarmonyPatch(typeof(PlayerControllerB))]
+[HarmonyPatch(typeof(StartOfRound))]
 public class StartWithExtras
 {
     private static readonly string TELEPORTER_NAME = "Teleporter";
@@ -33,6 +33,8 @@ public class StartWithExtras
     private static int inverseTeleporterID = -1;
     private static bool idsInitialized;
     private static bool stLoaded;
+
+    private static bool isFirstDayAboutToStart = false;
 
     /// <summary>
     /// Find and cache teleporter item IDs from the unlockables list
@@ -59,35 +61,118 @@ public class StartWithExtras
         idsInitialized = true;
     }
 
-    /// <summary>
-    /// Called when player connects - unlocks teleporter on new games
-    /// </summary>
-    [HarmonyPatch(nameof(PlayerControllerB.ConnectClientToPlayerObject))]
-    [HarmonyPostfix]
-    private static void ConnectClientToPlayerObjectPatch(PlayerControllerB __instance)
+    private static void setCredits(int credits)
     {
-        StartOfRound startOfRound = StartOfRound.Instance;
-        MyFirstMod.Logger.LogDebug("ConnectClientToPlayerObjectPatch() called");
-        
-        MyFirstMod.Logger.LogDebug(
-            $"daysPlayersSurvivedInARow={startOfRound.daysPlayersSurvivedInARow}"
-        );
-        
-        // Only unlock on fresh games (0 days survived)
-        if (startOfRound.daysPlayersSurvivedInARow == 0)
+        Terminal terminal = UnityEngine.Object.FindAnyObjectByType<Terminal>();
+
+        if ((NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
         {
-            MyFirstMod.Logger.LogDebug("New game detected - Auto-unlocking items");
-            
-            // Only host/server can unlock items
-            if (startOfRound.NetworkManager.IsHost || startOfRound.NetworkManager.IsServer)
+            terminal.useCreditsCooldown = true;
+            terminal.groupCredits = credits;
+            terminal.SyncGroupCreditsServerRpc(
+                terminal.groupCredits,
+                terminal.numberOfItemsInDropship
+            );
+        }
+    }
+
+    /// <summary>
+    /// Called when launching a save that has day 0 - unlocks teleporter on new games
+    /// Will launch multiple times if the save if then relaunched without starting a day.
+    /// </summary>
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.PlayFirstDayShipAnimation))]
+    [HarmonyPostfix]
+    private static void PlayFirstDayShipAnimationPatch(StartOfRound __instance)
+    {
+        MyFirstMod.Logger.LogDebug("PlayFirstDayShipAnimationPatch() called");
+        isFirstDayAboutToStart = true;
+    }
+
+    private static void ApplyGifts()
+    {
+        MyFirstMod.Logger.LogDebug("Applying first day on the job gifts");
+
+        StartOfRound startOfRound = StartOfRound.Instance;
+
+        // Only host/server can unlock items
+        if (startOfRound.NetworkManager.IsHost || startOfRound.NetworkManager.IsServer)
+        {
+            if (MyFirstMod.configFreeTeleporter.Value)
             {
                 if (!idsInitialized)
                 {
                     getTeleporterIDs(startOfRound);
                 }
                 MyFirstMod.Logger.LogDebug("Unlocking teleporter...");
-                startOfRound.BuyShipUnlockableServerRpc(teleporterID, -1);
+                if (!startOfRound.unlockablesList.unlockables[teleporterID].hasBeenUnlockedByPlayer)
+                {
+                    startOfRound.BuyShipUnlockableServerRpc(teleporterID, -1);
+                }
+                else
+                {
+                    MyFirstMod.Logger.LogDebug("Teleporter already available...");
+                }
+            }
+            if (MyFirstMod.configFreeInverseTeleporter.Value)
+            {
+                if (!idsInitialized)
+                {
+                    getTeleporterIDs(startOfRound);
+                }
+                MyFirstMod.Logger.LogDebug("Unlocking inverse teleporter...");
+                if (
+                    !startOfRound
+                        .unlockablesList
+                        .unlockables[inverseTeleporterID]
+                        .hasBeenUnlockedByPlayer
+                )
+                {
+                    startOfRound.BuyShipUnlockableServerRpc(inverseTeleporterID, -1);
+                }
+                else
+                {
+                    MyFirstMod.Logger.LogDebug("Inverse teleporter already available...");
+                }
+            }
+            if (MyFirstMod.configStartWithExtraCredits.Value)
+            {
+                MyFirstMod.Logger.LogDebug(
+                    $"Setting start credits to {MyFirstMod.configStartWithExtraCreditsValue.Value}"
+                );
+                setCredits(MyFirstMod.configStartWithExtraCreditsValue.Value);
             }
         }
+    }
+
+    /// <summary>
+    /// Called when the game resets for a new game from day 0
+    /// </summary>
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.playersFiredGameOver))]
+    [HarmonyPostfix]
+    private static void playersFiredGameOverPatch(StartOfRound __instance)
+    {
+        MyFirstMod.Logger.LogDebug("playersFiredGameOverPatch() called");
+
+        if (!isFirstDayAboutToStart)
+            return;
+        isFirstDayAboutToStart = false;
+
+        ApplyGifts();
+    }
+
+    /// <summary>
+    /// Called when player connects - unlocks teleporter on new games
+    /// </summary>
+    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ConnectClientToPlayerObject))]
+    [HarmonyPostfix]
+    private static void ConnectClientToPlayerObjectPatch(StartOfRound __instance)
+    {
+        MyFirstMod.Logger.LogDebug("ConnectClientToPlayerObjectPatch() called");
+
+        if (!isFirstDayAboutToStart)
+            return;
+        isFirstDayAboutToStart = false;
+
+        ApplyGifts();
     }
 }
