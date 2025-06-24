@@ -24,7 +24,7 @@ target = "plugins/ESN.StarterPack/"
 
 [[build.copy]]
 source = "esnassets"
-target = "plugins/ESN.StarterPack/"
+target = "plugins/ESN.StarterPack/assets/"
 
 [[build.copy]]
 source = "../CHANGELOG.md"
@@ -36,7 +36,7 @@ target = "/"
 
 [[build.copy]]
 source = "../LICENSES"
-target = "/"
+target = "/LICENSES/"
 
 [publish]
 communities = [ "lethal-company", ]
