@@ -8,7 +8,7 @@ using UnityEngine.Video;
 namespace MyFirstMod.Patches;
 
 [HarmonyPatch(typeof(PlayerControllerB))]
-public class FreeMoney
+public class StartWithExtras
 {
     private static readonly string TELEPORTER_NAME = "Teleporter";
     private static readonly string INVERSE_NAME = "Inverse Teleporter";
