@@ -35,6 +35,7 @@ public class StartWithExtras
     private static bool stLoaded;
 
     private static bool isFirstDayAboutToStart = false;
+    private static bool gameAlreadyReset = false;
 
     /// <summary>
     /// Find and cache teleporter item IDs from the unlockables list
@@ -74,18 +75,6 @@ public class StartWithExtras
                 terminal.numberOfItemsInDropship
             );
         }
-    }
-
-    /// <summary>
-    /// Called when launching a save that has day 0 - unlocks teleporter on new games
-    /// Will launch multiple times if the save if then relaunched without starting a day.
-    /// </summary>
-    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.PlayFirstDayShipAnimation))]
-    [HarmonyPostfix]
-    private static void PlayFirstDayShipAnimationPatch(StartOfRound __instance)
-    {
-        MyFirstMod.Logger.LogDebug("PlayFirstDayShipAnimationPatch() called");
-        isFirstDayAboutToStart = true;
     }
 
     private static void ApplyGifts()
@@ -145,17 +134,31 @@ public class StartWithExtras
     }
 
     /// <summary>
+    /// Called when launching a save that has day 0 - unlocks teleporter on new games
+    /// Will launch multiple times if the save if then relaunched without starting a day.
+    /// </summary>
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.PlayFirstDayShipAnimation))]
+    [HarmonyPostfix]
+    private static void PlayFirstDayShipAnimationPatch(StartOfRound __instance)
+    {
+        MyFirstMod.Logger.LogDebug("PlayFirstDayShipAnimationPatch() called");
+        if (!gameAlreadyReset)
+        {
+            gameAlreadyReset = false;
+            isFirstDayAboutToStart = true;
+        }
+    }
+
+    /// <summary>
     /// Called when the game resets for a new game from day 0
     /// </summary>
-    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.playersFiredGameOver))]
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.ResetShip))]
     [HarmonyPostfix]
-    private static void playersFiredGameOverPatch(StartOfRound __instance)
+    private static void ResetShipPatch(StartOfRound __instance)
     {
-        MyFirstMod.Logger.LogDebug("playersFiredGameOverPatch() called");
+        MyFirstMod.Logger.LogDebug("ResetShipPatch() called");
 
-        if (!isFirstDayAboutToStart)
-            return;
-        isFirstDayAboutToStart = false;
+        gameAlreadyReset = true; // Indicate that gifts are already applied
 
         ApplyGifts();
     }
