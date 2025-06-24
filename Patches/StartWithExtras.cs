@@ -132,6 +132,10 @@ public class StartWithExtras
                 setCredits(StarterPack.configStartWithExtraCreditsValue.Value);
             }
         }
+        else
+        {
+            StarterPack.Logger.LogInfo("User is not host. Not applying starting gifts");
+        }
     }
 
     /// <summary>
