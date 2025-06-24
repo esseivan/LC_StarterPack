@@ -51,7 +51,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.event.release.tag_name }} thunderstore-build/dist/*.zip
+          gh release upload ${{ github.event.release.tag_name }} thunderstore-build/*/dist/*.zip
 
   deploy-thunderstore:
     name: Deploy to Thunderstore
