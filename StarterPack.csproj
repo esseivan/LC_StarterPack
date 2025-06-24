@@ -18,7 +18,7 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
   </PropertyGroup> -->
-  
+
   <!-- Set NuGet Sources -->
   <PropertyGroup>
     <RestoreAdditionalProjectSources>
@@ -90,6 +90,11 @@
           <PrivateAssets>all</PrivateAssets>
       </PackageReference>
   </ItemGroup>
+  <!-- MinVer for automatic versioning from git tags -->
+  <PropertyGroup>
+      <MinVerDefaultPreReleaseIdentifiers>dev</MinVerDefaultPreReleaseIdentifiers>
+      <MinVerTagPrefix>v</MinVerTagPrefix>
+  </PropertyGroup>
 
   <Target Name="SetPluginVersion" BeforeTargets="AddGeneratedFile" DependsOnTargets="MinVer">
       <PropertyGroup>
@@ -108,4 +113,17 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Debug'">
     <Exec Command="call postbuild.bat" />
   </Target>
+
+  <Target Name="PackThunderstore" DependsOnTargets="NetcodePatch;SetPluginVersion" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
+    <MakeDir Directories="$(ProjectDir)assets" Condition="!Exists('$(ProjectDir)assets')" />
+    <Exec Command="dotnet tcli build --config-path $(ProjectDir)assets/thunderstore.toml --package-version $(PlainVersion)" />
+    <ItemGroup>
+        <FilesToRename Include="$(ProjectDir)dist/*-$(PlainVersion).zip" />
+    </ItemGroup>
+    <Move SourceFiles="@(FilesToRename)" DestinationFiles="@(FilesToRename -&gt; Replace($(PlainVersion), $(MinVerVersion)))" />
+</Target>
+
+<Target Name="PublishThunderstore" DependsOnTargets="SetPluginVersion">
+    <Exec Command="dotnet tcli publish --config-path $(ProjectDir)assets/thunderstore.toml --file $(ProjectDir)dist/*-$(MinVerVersion).zip" />
+</Target>
 </Project>

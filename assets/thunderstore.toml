@@ -1,0 +1,46 @@
+[config]
+schemaVersion = "0.0.1"
+
+[general]
+repository = "https://thunderstore.io"
+
+[package]
+namespace = "ESN"
+name = "StarterPack"
+description = "This mod gives extra stuff at the start of the game to make it more enjoyable for some people. This inclulde : credits, teleporters"
+websiteUrl = "https://github.com/esseivan/LC_StarterPack"
+containsNsfwContent = false
+[package.dependencies]
+BepInEx-BepInExPack = "5.4.2100"
+
+[build]
+icon = "icon.png"
+readme = "../README.md"
+outdir = "../dist"
+
+[[build.copy]]
+source = "../bin/Release/netstandard2.1/ESN.StarterPack.dll"
+target = "plugins/ESN.StarterPack/"
+
+[[build.copy]]
+source = "esnassets"
+target = "plugins/ESN.StarterPack/"
+
+[[build.copy]]
+source = "../CHANGELOG.md"
+target = "/"
+
+[[build.copy]]
+source = "../LICENSE"
+target = "/"
+
+[[build.copy]]
+source = "../LICENSES"
+target = "/"
+
+[publish]
+communities = [ "lethal-company", ]
+[publish.categories]
+lethal-company = [ "mods", "misc", ]
+
+
