@@ -3,13 +3,13 @@ using Unity.Netcode;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace MyFirstMod;
+namespace StarterPack;
 
 public class ExampleNetworkHandler : NetworkBehaviour
 {
     public override void OnNetworkSpawn()
     {
-        MyFirstMod.Logger.LogError("OnNetworkSpawn() called");
+        StarterPack.Logger.LogError("OnNetworkSpawn() called");
         LevelEvent = null;
 
         if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
@@ -22,8 +22,8 @@ public class ExampleNetworkHandler : NetworkBehaviour
     [ClientRpc]
     public void EventClientRpc(string eventName)
     {
-        MyFirstMod.Logger.LogError("EventClientRpc() called");
-        MyFirstMod.Logger.LogError($"LevelEvent is {(LevelEvent == null ? "NULL" : "Not null")}");
+        StarterPack.Logger.LogError("EventClientRpc() called");
+        StarterPack.Logger.LogError($"LevelEvent is {(LevelEvent == null ? "NULL" : "Not null")}");
         LevelEvent?.Invoke(eventName);
     }
 

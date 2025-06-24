@@ -12,7 +12,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Video;
 
-namespace MyFirstMod.Patches;
+namespace StarterPack.Patches;
 
 /// <summary>
 /// Patch to sync ship lights with monitor screen state
@@ -27,7 +27,7 @@ public class ExampleScreenPatch
     [HarmonyPostfix]
     private static void SwitchScreenButton(ManualCameraRenderer __instance)
     {
-        MyFirstMod.Logger.LogDebug("SwitchScreenButton() called");
+        StarterPack.Logger.LogDebug("SwitchScreenButton() called");
         // Sync ship lights with screen on/off state
         StartOfRound.Instance.shipRoomLights.SetShipLightsBoolean(__instance.isScreenOn);
     }

@@ -2,7 +2,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Video;
 
-namespace MyFirstMod.Patches;
+namespace StarterPack.Patches;
 
 [HarmonyPatch(typeof(TVScript))]
 public class ExampleTVPatch
@@ -11,7 +11,7 @@ public class ExampleTVPatch
     [HarmonyPostfix]
     private static void SwitchTVPrefix(TVScript __instance)
     {
-        MyFirstMod.Logger.LogDebug("SwitchTVPrefix() called");
+        StarterPack.Logger.LogDebug("SwitchTVPrefix() called");
         StartOfRound.Instance.shipRoomLights.SetShipLightsBoolean(__instance.tvOn);
     }
 
@@ -19,7 +19,7 @@ public class ExampleTVPatch
     [HarmonyPrefix]
     public static bool TurnTVOnOff(bool on, TVScript __instance)
     {
-        MyFirstMod.Logger.LogDebug("TurnTVOnOff() called");
+        StarterPack.Logger.LogDebug("TurnTVOnOff() called");
 
         return false;
     }

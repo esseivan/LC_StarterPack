@@ -19,7 +19,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Video;
 
-namespace MyFirstMod.Patches;
+namespace StarterPack.Patches;
 
 /// <summary>
 /// Patch to automatically unlock teleporter items on new game start
@@ -42,7 +42,7 @@ public class StartWithExtras
     /// </summary>
     private static void getTeleporterIDs(StartOfRound instance)
     {
-        MyFirstMod.Logger.LogInfo("Getting item IDs");
+        StarterPack.Logger.LogInfo("Getting item IDs");
         for (var i = 0; i < instance.unlockablesList.unlockables.Count; i++)
         {
             var unlockableItem = instance.unlockablesList.unlockables[i];
@@ -50,12 +50,12 @@ public class StartWithExtras
             var itemName = unlockableItem.unlockableName.ToLower();
             if (itemName.Equals(TELEPORTER_NAME.ToLower()))
             {
-                MyFirstMod.Logger.LogInfo($"{TELEPORTER_NAME} ID: {i}");
+                StarterPack.Logger.LogInfo($"{TELEPORTER_NAME} ID: {i}");
                 teleporterID = i;
             }
             else if (itemName.Equals(INVERSE_NAME.ToLower()))
             {
-                MyFirstMod.Logger.LogInfo($"{INVERSE_NAME} ID: {i}");
+                StarterPack.Logger.LogInfo($"{INVERSE_NAME} ID: {i}");
                 inverseTeleporterID = i;
             }
         }
@@ -79,36 +79,36 @@ public class StartWithExtras
 
     private static void ApplyGifts()
     {
-        MyFirstMod.Logger.LogDebug("Applying first day on the job gifts");
+        StarterPack.Logger.LogDebug("Applying first day on the job gifts");
 
         StartOfRound startOfRound = StartOfRound.Instance;
 
         // Only host/server can unlock items
         if (startOfRound.NetworkManager.IsHost || startOfRound.NetworkManager.IsServer)
         {
-            if (MyFirstMod.configFreeTeleporter.Value)
+            if (StarterPack.configFreeTeleporter.Value)
             {
                 if (!idsInitialized)
                 {
                     getTeleporterIDs(startOfRound);
                 }
-                MyFirstMod.Logger.LogDebug("Unlocking teleporter...");
+                StarterPack.Logger.LogDebug("Unlocking teleporter...");
                 if (!startOfRound.unlockablesList.unlockables[teleporterID].hasBeenUnlockedByPlayer)
                 {
-                    startOfRound.BuyShipUnlockableServerRpc(teleporterID, -1);
+                    startOfRound.BuyShipUnlockableServerRpc(teleporterID, 101);
                 }
                 else
                 {
-                    MyFirstMod.Logger.LogDebug("Teleporter already available...");
+                    StarterPack.Logger.LogDebug("Teleporter already available...");
                 }
             }
-            if (MyFirstMod.configFreeInverseTeleporter.Value)
+            if (StarterPack.configFreeInverseTeleporter.Value)
             {
                 if (!idsInitialized)
                 {
                     getTeleporterIDs(startOfRound);
                 }
-                MyFirstMod.Logger.LogDebug("Unlocking inverse teleporter...");
+                StarterPack.Logger.LogDebug("Unlocking inverse teleporter...");
                 if (
                     !startOfRound
                         .unlockablesList
@@ -116,19 +116,19 @@ public class StartWithExtras
                         .hasBeenUnlockedByPlayer
                 )
                 {
-                    startOfRound.BuyShipUnlockableServerRpc(inverseTeleporterID, -1);
+                    startOfRound.BuyShipUnlockableServerRpc(inverseTeleporterID, 101);
                 }
                 else
                 {
-                    MyFirstMod.Logger.LogDebug("Inverse teleporter already available...");
+                    StarterPack.Logger.LogDebug("Inverse teleporter already available...");
                 }
             }
-            if (MyFirstMod.configStartWithExtraCredits.Value)
+            if (StarterPack.configStartWithExtraCredits.Value)
             {
-                MyFirstMod.Logger.LogDebug(
-                    $"Setting start credits to {MyFirstMod.configStartWithExtraCreditsValue.Value}"
+                StarterPack.Logger.LogDebug(
+                    $"Setting start credits to {StarterPack.configStartWithExtraCreditsValue.Value}"
                 );
-                setCredits(MyFirstMod.configStartWithExtraCreditsValue.Value);
+                setCredits(StarterPack.configStartWithExtraCreditsValue.Value);
             }
         }
     }
@@ -141,7 +141,7 @@ public class StartWithExtras
     [HarmonyPostfix]
     private static void PlayFirstDayShipAnimationPatch(StartOfRound __instance)
     {
-        MyFirstMod.Logger.LogDebug("PlayFirstDayShipAnimationPatch() called");
+        StarterPack.Logger.LogDebug("PlayFirstDayShipAnimationPatch() called");
         if (!gameAlreadyReset)
         {
             gameAlreadyReset = false;
@@ -156,7 +156,7 @@ public class StartWithExtras
     [HarmonyPostfix]
     private static void ResetShipPatch(StartOfRound __instance)
     {
-        MyFirstMod.Logger.LogDebug("ResetShipPatch() called");
+        StarterPack.Logger.LogDebug("ResetShipPatch() called");
 
         gameAlreadyReset = true; // Indicate that gifts are already applied
 
@@ -170,7 +170,7 @@ public class StartWithExtras
     [HarmonyPostfix]
     private static void ConnectClientToPlayerObjectPatch(StartOfRound __instance)
     {
-        MyFirstMod.Logger.LogDebug("ConnectClientToPlayerObjectPatch() called");
+        StarterPack.Logger.LogDebug("ConnectClientToPlayerObjectPatch() called");
 
         if (!isFirstDayAboutToStart)
             return;

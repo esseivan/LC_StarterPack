@@ -6,17 +6,17 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LobbyCompatibility.Attributes;
 using LobbyCompatibility.Enums;
-using MyFirstMod.Patches;
+using StarterPack.Patches;
 using UnityEngine;
 
-namespace MyFirstMod;
+namespace StarterPack;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 //[BepInDependency("BMX.LobbyCompatibility", BepInDependency.DependencyFlags.HardDependency)]
 //[LobbyCompatibility(CompatibilityLevel.ClientOnly, VersionStrictness.None)]
-public class MyFirstMod : BaseUnityPlugin
+public class StarterPack : BaseUnityPlugin
 {
-    public static MyFirstMod Instance { get; private set; } = null!;
+    public static StarterPack Instance { get; private set; } = null!;
     internal static new ManualLogSource Logger { get; private set; } = null!;
     internal static Harmony Harmony { get; set; }
 
@@ -93,13 +93,9 @@ public class MyFirstMod : BaseUnityPlugin
         SetupConfigBinds();
 
         Patch();
-        NetcodePatcher();
 
         if (configDisplayGreeting.Value)
             Logger.LogDebug(configGreeting.Value);
-
-        string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        Assets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "esnassets"));
 
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
@@ -107,6 +103,10 @@ public class MyFirstMod : BaseUnityPlugin
     private static void NetcodePatcher()
     {
         Logger.LogDebug("Patching netcode...");
+
+        string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        Assets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "assets/esnassets"));
+
         var types = Assembly.GetExecutingAssembly().GetTypes();
         foreach (var type in types)
         {
@@ -137,6 +137,7 @@ public class MyFirstMod : BaseUnityPlugin
         if (configEnableTests.Value)
         {
             Harmony.PatchAll();
+            NetcodePatcher();
         }
         else
         {

@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Video;
 
-namespace MyFirstMod.Patches;
+namespace StarterPack.Patches;
 
 [HarmonyPatch(typeof(ShipLights))]
 public class LightPatch
@@ -15,8 +15,8 @@ public class LightPatch
     {
         bool isOn = __instance.areLightsOn;
 
-        MyFirstMod.Logger.LogDebug("ToggleShipLightsPostfix() called");
-        MyFirstMod.Logger.LogDebug($"Lights are {isOn}");
+        StarterPack.Logger.LogDebug("ToggleShipLightsPostfix() called");
+        StarterPack.Logger.LogDebug($"Lights are {isOn}");
         ManualCameraRenderer obj = UnityEngine.Object.FindObjectOfType<ManualCameraRenderer>();
 
         Terminal terminal = UnityEngine.Object.FindAnyObjectByType<Terminal>();
@@ -36,14 +36,14 @@ public class LightPatch
 
         if (obj is not null && obj.HasMethod("SwitchScreenOn"))
         {
-            MyFirstMod.Logger.LogDebug($"TVon is {obj.isScreenOn}");
+            StarterPack.Logger.LogDebug($"TVon is {obj.isScreenOn}");
             //obj.SwitchScreenOn(isOn);
             //obj.syncingSwitchScreen = true;
             //obj.SwitchScreenOnServerRpc(isOn);
         }
         else
         {
-            MyFirstMod.Logger.LogDebug(
+            StarterPack.Logger.LogDebug(
                 $"Could not find 'ManualCameraRenderer' : {obj?.ToString()}"
             );
         }

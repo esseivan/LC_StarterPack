@@ -1,6 +1,6 @@
 using HarmonyLib;
 
-namespace MyFirstMod.Patches;
+namespace StarterPack.Patches;
 
 [HarmonyPatch(typeof(GrabbableObject))]
 public class PatchGrabbable
@@ -10,6 +10,6 @@ public class PatchGrabbable
     private static void EquipItemPostfix(GrabbableObject __instance)
     {
         var itemName = __instance.itemProperties.itemName;
-        MyFirstMod.Logger.LogDebug(itemName);
+        StarterPack.Logger.LogDebug(itemName);
     }
 }

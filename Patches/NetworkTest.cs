@@ -4,7 +4,7 @@ using System.Text;
 using HarmonyLib;
 using Unity.Netcode;
 
-namespace MyFirstMod.Patches;
+namespace StarterPack.Patches;
 
 [HarmonyPatch]
 internal class NetworkTest
@@ -12,7 +12,7 @@ internal class NetworkTest
     [HarmonyPostfix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewFloor))]
     static void SubscribeToHandler()
     {
-        MyFirstMod.Logger.LogError("SubscribeToHandler() called");
+        StarterPack.Logger.LogError("SubscribeToHandler() called");
         ExampleNetworkHandler.LevelEvent += ReceivedEventFromServer;
     }
 
@@ -22,14 +22,14 @@ internal class NetworkTest
     ]
     static void UnsubscribeFromHandler()
     {
-        MyFirstMod.Logger.LogError("UnsubscribeFromHandler() called");
+        StarterPack.Logger.LogError("UnsubscribeFromHandler() called");
         ExampleNetworkHandler.LevelEvent -= ReceivedEventFromServer;
     }
 
     static void ReceivedEventFromServer(string eventName)
     {
         // Event Code Here
-        MyFirstMod.Logger.LogError("Successfully received RPC");
+        StarterPack.Logger.LogError("Successfully received RPC");
     }
 
     public static void SendEventToClients(string eventName)
@@ -37,7 +37,7 @@ internal class NetworkTest
         if (!(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
             return;
 
-        MyFirstMod.Logger.LogError("Sending RPC...");
+        StarterPack.Logger.LogError("Sending RPC...");
         ExampleNetworkHandler.Instance.EventClientRpc(eventName);
     }
 }

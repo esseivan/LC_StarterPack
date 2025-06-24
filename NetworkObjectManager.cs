@@ -2,7 +2,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-namespace MyFirstMod;
+namespace StarterPack;
 
 [HarmonyPatch]
 public class NetworkObjectManager
@@ -13,11 +13,11 @@ public class NetworkObjectManager
         if (networkPrefab != null)
             return;
 
-        networkPrefab = (GameObject)MyFirstMod.Assets.LoadAsset("ExampleNetworkHandler");
+        networkPrefab = (GameObject)StarterPack.Assets.LoadAsset("ExampleNetworkHandler");
         networkPrefab.AddComponent<ExampleNetworkHandler>();
 
         NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
-        MyFirstMod.Logger.LogError("ExampleNetworkHandler successfully added");
+        StarterPack.Logger.LogError("ExampleNetworkHandler successfully added");
     }
 
     [HarmonyPostfix, HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Awake))]
@@ -31,7 +31,7 @@ public class NetworkObjectManager
                 Quaternion.identity
             );
             networkHandlerHost.GetComponent<NetworkObject>().Spawn();
-            MyFirstMod.Logger.LogError("NetworkObject successfully spawned");
+            StarterPack.Logger.LogError("NetworkObject successfully spawned");
         }
     }
 
