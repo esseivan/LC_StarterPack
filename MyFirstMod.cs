@@ -40,6 +40,9 @@ public class MyFirstMod : BaseUnityPlugin
             "Whether or not to show the greeting text"
         );
 
+        if (configDisplayGreeting.Value)
+            Logger.LogDebug(configGreeting.Value);
+
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
 
