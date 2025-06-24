@@ -23,6 +23,12 @@ public class MyFirstMod : BaseUnityPlugin
     private ConfigEntry<string> configGreeting;
     private ConfigEntry<bool> configDisplayGreeting;
 
+    private ConfigEntry<bool> configEnableTests;
+
+    private ConfigEntry<bool> configFreeTeleporter;
+    private ConfigEntry<bool> configFreeInverseTeleporter;
+    private ConfigEntry<bool> configWalkie;
+
     public static AssetBundle Assets;
 
     private void Awake()
