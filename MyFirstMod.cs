@@ -18,27 +18,21 @@ public class MyFirstMod : BaseUnityPlugin
 {
     public static MyFirstMod Instance { get; private set; } = null!;
     internal static new ManualLogSource Logger { get; private set; } = null!;
-    internal static Harmony? Harmony { get; set; }
+    internal static Harmony Harmony { get; set; }
 
-    private ConfigEntry<string> configGreeting;
-    private ConfigEntry<bool> configDisplayGreeting;
-
-    private ConfigEntry<bool> configEnableTests;
-
-    private ConfigEntry<bool> configFreeTeleporter;
-    private ConfigEntry<bool> configFreeInverseTeleporter;
-    private ConfigEntry<bool> configWalkie;
+    public static ConfigEntry<string> configGreeting;
+    public static ConfigEntry<bool> configDisplayGreeting;
+    public static ConfigEntry<bool> configEnableTests;
+    public static ConfigEntry<bool> configFreeTeleporter;
+    public static ConfigEntry<bool> configFreeInverseTeleporter;
+    public static ConfigEntry<bool> configWalkie;
+    public static ConfigEntry<bool> configStartWithExtraCredits;
+    public static ConfigEntry<int> configStartWithExtraCreditsValue;
 
     public static AssetBundle Assets;
 
-    private void Awake()
+    private void SetupConfigBinds()
     {
-        Logger = base.Logger;
-        Instance = this;
-
-        Patch();
-        NetcodePatcher();
-
         configGreeting = Config.Bind(
             "General", // The section under which the option is shown
             "GreetingText", // The key of the configuration option in the configuration file
@@ -52,6 +46,54 @@ public class MyFirstMod : BaseUnityPlugin
             true,
             "Whether or not to show the greeting text"
         );
+
+        configEnableTests = Config.Bind(
+            "General.Toggles",
+            "EnableTests",
+            false,
+            "Enable test features and debug functionality"
+        );
+
+        configFreeTeleporter = Config.Bind(
+            "Items",
+            "FreeTeleporter",
+            true,
+            "Automatically unlock teleporter at game start"
+        );
+
+        configFreeInverseTeleporter = Config.Bind(
+            "Items",
+            "FreeInverseTeleporter",
+            false,
+            "Automatically unlock inverse teleporter at game start"
+        );
+
+        configWalkie = Config.Bind("Items", "FreeWalkie", false, "Start with free walkie-talkie");
+
+        configStartWithExtraCredits = Config.Bind(
+            "Economy",
+            "StartWithExtraCredits",
+            false,
+            "Start new games with extra credits"
+        );
+
+        configStartWithExtraCreditsValue = Config.Bind(
+            "Economy",
+            "StartingCreditsAmount",
+            100,
+            "Starting credit value (if enabled)"
+        );
+    }
+
+    private void Awake()
+    {
+        Logger = base.Logger;
+        Instance = this;
+
+        SetupConfigBinds();
+
+        Patch();
+        NetcodePatcher();
 
         if (configDisplayGreeting.Value)
             Logger.LogDebug(configGreeting.Value);
@@ -86,22 +128,28 @@ public class MyFirstMod : BaseUnityPlugin
         Logger.LogDebug("Patching netcode... complete");
     }
 
-    internal static void Patch()
+    internal void Patch()
     {
         Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
 
         Logger.LogDebug("Patching...");
 
-        //Harmony.PatchAll(typeof(LightPatch));
-        //Harmony.PatchAll(typeof(PatchGrabbable));
-        //Harmony.PatchAll(typeof(ExampleScreenPatch));
-        //Harmony.PatchAll(typeof(RoundManager));
-        //Harmony.PatchAll(typeof(GameNetworkManager));
-        //Harmony.PatchAll(typeof(StartOfRound));
-
-        //Harmony.PatchAll(typeof(ExampleTVPatch)); // No longer working in v72
-
-        Harmony.PatchAll();
+        if (configEnableTests.Value)
+        {
+            Harmony.PatchAll();
+        }
+        else
+        {
+            bool patch_StartWithExtras =
+                configStartWithExtraCredits.Value
+                || configFreeTeleporter.Value
+                || configFreeInverseTeleporter.Value;
+            if (patch_StartWithExtras)
+            {
+                Logger.LogDebug("Patching StartWithExtras");
+                Harmony.PatchAll(typeof(StartWithExtras));
+            }
+        }
 
         Logger.LogDebug("Finished patching!");
     }
