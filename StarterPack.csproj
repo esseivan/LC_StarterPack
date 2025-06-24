@@ -41,6 +41,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>embedded</DebugType>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\Lethal Company\BepInEx\config\ESN.StarterPack.cfg" Link="ESN.StarterPack.cfg" />
+  </ItemGroup>
   <!-- Primary Package References -->
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />

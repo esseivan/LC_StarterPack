@@ -68,7 +68,12 @@ public class StarterPack : BaseUnityPlugin
             "Automatically unlock inverse teleporter at game start"
         );
 
-        configWalkie = Config.Bind("Items", "FreeWalkie", false, "Start with free walkie-talkie");
+        configWalkie = Config.Bind(
+            "Items",
+            "FreeWalkie",
+            false,
+            "Start with free walkie-talkie. Not yet implemented !"
+        );
 
         configStartWithExtraCredits = Config.Bind(
             "Economy",
@@ -80,7 +85,7 @@ public class StarterPack : BaseUnityPlugin
         configStartWithExtraCreditsValue = Config.Bind(
             "Economy",
             "StartingCreditsAmount",
-            100,
+            101,
             "Starting credit value (if enabled)"
         );
     }
