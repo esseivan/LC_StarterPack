@@ -77,7 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="assets\esnassets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="esnassets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

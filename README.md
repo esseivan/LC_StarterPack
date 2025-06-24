@@ -20,6 +20,7 @@ This mod reuses code from the following MIT-licensed mods:
 
 - **LethalLib** by [_Evaisa_]  
   Reuses GitHub workflows and CHANGELOG format  
+  Reuses terminal node add process    
   https://github.com/EvaisaDev/LethalLib  
   License included in `LICENSES/LethalLib-original-license.txt`
 

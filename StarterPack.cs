@@ -102,6 +102,8 @@ public class StarterPack : BaseUnityPlugin
 
         SetupConfigBinds();
 
+        LoadAssets();
+
         Patch();
 
         CreateTerminalCommands();
@@ -110,6 +112,24 @@ public class StarterPack : BaseUnityPlugin
             Logger.LogDebug(configGreeting.Value);
 
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
+    }
+
+    private static void LoadAssets()
+    {
+        string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        Assets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "assets/esnassets"));
+        if (Assets == null)
+        {
+            Logger.LogError("Failed to load custom assets.");
+            return;
+        }
+
+        Logger.LogDebug($"Assets loaded");
+        string[] names = Assets.GetAllAssetNames();
+        foreach (string name in names)
+        {
+            Logger.LogDebug($"{name}");
+        }
     }
 
     private static void CreateTerminalCommands()
@@ -139,9 +159,6 @@ public class StarterPack : BaseUnityPlugin
     private static void NetcodePatcher()
     {
         Logger.LogDebug("Patching netcode...");
-
-        string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        Assets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "assets/esnassets"));
 
         var types = Assembly.GetExecutingAssembly().GetTypes();
         foreach (var type in types)
