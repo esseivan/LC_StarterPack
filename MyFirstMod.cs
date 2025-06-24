@@ -1,4 +1,5 @@
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using LobbyCompatibility.Attributes;
@@ -15,12 +16,29 @@ public class MyFirstMod : BaseUnityPlugin
     internal static new ManualLogSource Logger { get; private set; } = null!;
     internal static Harmony? Harmony { get; set; }
 
+    private ConfigEntry<string> configGreeting;
+    private ConfigEntry<bool> configDisplayGreeting;
+
     private void Awake()
     {
         Logger = base.Logger;
         Instance = this;
 
         Patch();
+
+        configGreeting = Config.Bind(
+            "General", // The section under which the option is shown
+            "GreetingText", // The key of the configuration option in the configuration file
+            "Hello, world!", // The default value
+            "A greeting text to show when the game is launched"
+        ); // Description of the option to show in the config file
+
+        configDisplayGreeting = Config.Bind(
+            "General.Toggles",
+            "DisplayGreeting",
+            true,
+            "Whether or not to show the greeting text"
+        );
 
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
