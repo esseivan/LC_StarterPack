@@ -32,7 +32,6 @@ public class StartWithExtras
     private static int teleporterID = -1;
     private static int inverseTeleporterID = -1;
     private static bool idsInitialized;
-    private static bool stLoaded;
 
     private static bool isFirstDayAboutToStart = false;
     private static bool gameAlreadyReset = false;
@@ -114,7 +113,7 @@ public class StartWithExtras
                 StarterPack.Logger.LogDebug("Unlocking teleporter...");
                 UnlockShipItem(teleporterID);
             }
-            
+
             if (StarterPack.configFreeInverseTeleporter.Value)
             {
                 if (!idsInitialized)

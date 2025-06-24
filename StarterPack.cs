@@ -6,12 +6,17 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LobbyCompatibility.Attributes;
 using LobbyCompatibility.Enums;
+using Newtonsoft.Json;
 using StarterPack.Patches;
+using TerminalApi;
+using TerminalApi.Classes;
 using UnityEngine;
+using static TerminalApi.TerminalApi;
 
 namespace StarterPack;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+[BepInDependency("atomic.terminalapi", MinimumDependencyVersion: "1.5.0")]
 //[BepInDependency("BMX.LobbyCompatibility", BepInDependency.DependencyFlags.HardDependency)]
 //[LobbyCompatibility(CompatibilityLevel.ClientOnly, VersionStrictness.None)]
 public class StarterPack : BaseUnityPlugin
@@ -97,7 +102,11 @@ public class StarterPack : BaseUnityPlugin
 
         SetupConfigBinds();
 
+        LoadAssets();
+
         Patch();
+
+        CreateTerminalCommands();
 
         if (configDisplayGreeting.Value)
             Logger.LogDebug(configGreeting.Value);
@@ -105,12 +114,51 @@ public class StarterPack : BaseUnityPlugin
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
 
+    private static void LoadAssets()
+    {
+        string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        Assets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "assets/esnassets"));
+        if (Assets == null)
+        {
+            Logger.LogError("Failed to load custom assets.");
+            return;
+        }
+
+        Logger.LogDebug($"Assets loaded");
+        string[] names = Assets.GetAllAssetNames();
+        foreach (string name in names)
+        {
+            Logger.LogDebug($"{name}");
+        }
+    }
+
+    private static void CreateTerminalCommands()
+    {
+        AddCommand(
+            "time",
+            new CommandInfo
+            {
+                Category = "other",
+                Description = "Displays the current time.",
+                DisplayTextSupplier = Commands.CheckTimeCMD,
+            },
+            "check"
+        );
+
+        AddCommand(
+            "test",
+            new CommandInfo
+            {
+                Category = "other",
+                Description = "Testing command",
+                DisplayTextSupplier = Commands.TestCMD,
+            }
+        );
+    }
+
     private static void NetcodePatcher()
     {
         Logger.LogDebug("Patching netcode...");
-
-        string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        Assets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "assets/esnassets"));
 
         var types = Assembly.GetExecutingAssembly().GetTypes();
         foreach (var type in types)
@@ -154,6 +202,8 @@ public class StarterPack : BaseUnityPlugin
             {
                 Logger.LogDebug("Patching StartWithExtras");
                 Harmony.PatchAll(typeof(StartWithExtras));
+
+                Harmony.PatchAll(typeof(TestTerminalNodePatch));
             }
         }
 
