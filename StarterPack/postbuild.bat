@@ -18,6 +18,7 @@ set buildDir=%projDir%\bin\%BUILD_CONFIG%\%TARGET_FRAMEWORK%
 
 echo Project directory is %projDir%
 cd ..
+cd ..
 
 REM Clean existing mod directory
 IF exist "%modDir%" (
