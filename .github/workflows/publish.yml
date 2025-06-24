@@ -26,21 +26,15 @@ jobs:
           dotnet restore
           dotnet tool restore
 
-      - name: Build and pack solution
+      - name: Build solution
         run: |
-          dotnet pack -c Release
+          dotnet build -c Release
 
       - name: Upload Thunderstore artifact
         uses: actions/upload-artifact@v4
         with:
           name: thunderstore-build
           path: ./dist/*.zip
-
-      - name: Upload nupkg artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: nupkg-build
-          path: ./bin/Release/*.nupkg
 
   upload-release-artifacts:
     name: Upload Release Artifacts
@@ -56,29 +50,12 @@ jobs:
       - name: Upload artifacts to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.event.release.tag_name }} thunderstore-build/dist/*.zip nupkg-build/bin/Release/*.nupkg
-
-  # deploy-nuget:
-  #   name: Deploy to NuGet
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Fetch Sources
-  #       uses: actions/checkout@v4
-
-  #     - name: Download nupkg artifact
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: nupkg-build
-
-  #     - name: Setup .NET environment
-  #       uses: actions/setup-dotnet@v3
-  #       with:
-  #         dotnet-version: "8.0.100"
-
-  #     - name: Publish to NuGet.org
-  #       run: |
-  #         dotnet nuget push ./bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: |
+          pwd
+          ls -al
+          ls -al thunderstore-build
+          ls -al thunderstore-build/*
+          gh release upload ${{ github.event.release.tag_name }} thunderstore-build/dist/*.zip nupkg-build/bin/Release/*.nupkg
 
   deploy-thunderstore:
     name: Deploy to Thunderstore
