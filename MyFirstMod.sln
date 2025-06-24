@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyFirstMod", "MyFirstMod.csproj", "{CEE8970A-F56A-47BD-9BAD-511A7C04B914}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "..\decompiled\Assembly-CSharp\Assembly-CSharp.csproj", "{B88DD651-1A5C-45FD-9372-C1A2275C1D88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{CEE8970A-F56A-47BD-9BAD-511A7C04B914}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEE8970A-F56A-47BD-9BAD-511A7C04B914}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEE8970A-F56A-47BD-9BAD-511A7C04B914}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B88DD651-1A5C-45FD-9372-C1A2275C1D88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B88DD651-1A5C-45FD-9372-C1A2275C1D88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
