@@ -12,7 +12,7 @@ websiteUrl = "https://github.com/esseivan/LC_StarterPack"
 containsNsfwContent = false
 [package.dependencies]
 BepInEx-BepInExPack = "5.4.2100"
-atomic.terminalapi = "1.5.0"
+NotAtomicBomb-TerminalApi = "1.5.0"
 
 [build]
 icon = "icon.png"
