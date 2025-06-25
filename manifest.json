@@ -1,8 +1,0 @@
-{
-    "author": "ESN",
-    "name": "StarterPack",
-    "version_number": "1.0.0",
-    "website_url": "https://github.com/esseivan/LC_StarterPack",
-    "description": "This mod gives extra stuff at the start of the game to make it more enjoyable for some people. This inclulde : credits, teleporters",
-    "dependencies": ["BepInEx-BepInExPack-5.4.2100"]
-}
